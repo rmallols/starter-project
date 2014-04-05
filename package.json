@@ -19,13 +19,11 @@
     "grunt-contrib-concat": "~0.3.0",
     "grunt-contrib-clean": "~0.4.1",
     "grunt-contrib-cssmin": "~0.6.1",
-    "grunt-preprocess": "~2.3.0",
     "grunt-karma": "~0.8.0",
     "grunt-shell": "~0.4.0",
     "grunt-html2js": "~0.1.7",
     "protractor": "~0.13.0",
     "grunt-contrib-watch": "~0.5.3",
-    "grunt-execute": "~0.1.5",
     "karma-jasmine": "^0.1.5",
     "karma-chrome-launcher": "^0.1.3"
   }

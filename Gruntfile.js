@@ -2,14 +2,10 @@ module.exports = function(grunt) {
 
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
-        libFolder: 'client/lib/',
-        jsFolder: 'client/js/',
-        htmlFolder: 'client/html/',
-        cssFolder: 'client/css',
-        minFolder: 'client/min/',
-        appsFolder: 'client/apps/',
         srcFolder: 'frontend/src/',
-        clean: ['<%= minFolder %>js.min.js', '<%= jsFolder %>/resources-<%= pkg.version %>.js'],
+        vendorFolder: 'frontend/vendor/',
+        distFolder: 'frontend/dist/',
+        clean: ['<%= distFolder %>js.min.js'],
         jshint: {
             all: ['<%= srcFolder %>/**/*.js'],
             options: {
@@ -19,70 +15,27 @@ module.exports = function(grunt) {
         },
         karma: {
             run: {
-                configFile: 'frontend/build/karma.conf.js',
+                configFile: 'frontend/build/tests/unit/karma.conf.js',
                 singleRun: true
             },
             watch: {
-                configFile: 'frontend/build/karma.conf.js',
+                configFile: 'frontend/build/tests/unit/karma.conf.js',
                 singleRun: false
-            }
-        },
-        preprocess : {
-            htmlDev : {
-                src : './index.tpl.html',
-                dest : './index.html',
-                options : {
-                    context : {
-                        version : 'dev'
-                    }
-                }
-            },
-            htmlProd : {
-                src : './index.tpl.html',
-                dest : './index.html',
-                options : {
-                    context : {
-                        version : '<%= pkg.version %>'
-                    }
-                }
-            },
-            jsProd: {
-                src : '<%= jsFolder %>/resources-prod.js',
-                dest : '<%= jsFolder %>/resources-<%= pkg.version %>.js'
             }
         },
         concat: {
             src: {
                 files: {
-                    '<%= minFolder %>js.min.js': [
-                        '<%= jsFolder %>controllers/*.js',
-                        '<%= jsFolder %>directives/**/*.js',
-                        '<%= jsFolder %>services/**/*.js',
-                        '<%= jsFolder %>errorHandler.js', '<%= jsFolder %>templates.js']
+                    '<%= distFolder %>js.min.js': ['<%= srcFolder %>/**/*.js']
                 }
             },
             lib: {
                 files: {
-                    '<%= minFolder %>lib.min.js': [
-                        '<%= libFolder %>date/date.js', '<%= libFolder %>date/i18n/*.js',
-                        '<%= libFolder %>angularJs/angular-sortable-0.0.1.js',
-                        '<%= libFolder %>powerTip/jquery.powertip-1.2.0.js',
-                        '<%= libFolder %>i18n/jquery.i18n.properties-1.0.9.js',
-                        '<%= libFolder %>rangy/rangy-*.js',
-                        '<%= libFolder %>yepnope/yepnope-1.5.4.js',
-                        '<%= libFolder %>form/jquery.form-3.25.0.js',
-                        '<%= libFolder %>morrisJs/*.js',
-                        '<%= libFolder %>select2/select2-3.4.5.js',
-                        '<%= libFolder %>mousetrap/mousetrap-1.4.6.js',
-                        '<%= libFolder %>fullscreen/jquery.fullscreen-1.1.4.js',
-                        '<%= libFolder %>miniColors/jquery.minicolors-2.1.1.js',
-                        '<%= libFolder %>iCheck/jquery.icheck-0.9.1.js',
-                        '<%= libFolder %>nprogress/nprogress-0.1.2.js']
+                    '<%= distFolder %>vendor.min.js': ['<%= vendorFolder %>/**/*.js']
                 }
             }
         },
         uglify: {
-            //Take the options from http://lisperator.net/uglifyjs/compress, start everything false and find where it fails. Afterwards, if possiblle, restore the select2.min.js
             options: {
                 mangle: true, //reduce names of local variables to (usually) single-letters.
                 report: 'min',
@@ -90,12 +43,12 @@ module.exports = function(grunt) {
             },
             src: {
                 files: {
-                    '<%= minFolder %>js.min.js': ['<%= minFolder %>js.min.js']
+                    '<%= distFolder %>js.min.js': ['<%= distFolder %>js.min.js']
                 }
             },
             lib: {
                 files: {
-                    '<%= minFolder %>lib.min.js': ['<%= minFolder %>lib.min.js']
+                    '<%= distFolder %>lib.min.js': ['<%= distFolder %>lib.min.js']
                 }
             }
         },
@@ -106,7 +59,7 @@ module.exports = function(grunt) {
                 }
             },
             main: {
-                src: ['client/**/*.html'],
+                src: ['<%= srcFolder %>/**/*.html'],
                 dest: '<%= jsFolder %>templates.js'
             }
         },
@@ -116,14 +69,14 @@ module.exports = function(grunt) {
                     '-Dwebdriver.chrome.driver=./node_modules/protractor/bin/selenium/chromedriver.exe',
                 options: { stdout: true }
             },
-            startProtractor:{ command: '.\\node_modules\\.bin\\protractor .\\server\\tests\\e2e\\customConf.js', options: { stdout: true } },
+            startProtractor:{ command: '.\\node_modules\\.bin\\protractor .\\frontend\\build\\e2e\\customConf.js', options: { stdout: true } },
             githubAdd:      { command: 'git add .', options: { stdout: true } },
             githubCommit:   { command: 'git commit -m "#0 prod update"', options: { stdout: true } },
             githubPush:     { command: 'git push', options: { stdout: true } }
         },
         watch: {
             templates: {
-                files: ['<%= htmlFolder %>**/*.html', '<%= appsFolder %>**/*.html'],
+                files: ['<%= srcFolder %>/**/*.html'],
                 tasks: ['generateTemplates'],
                 options: {
                     spawn: false
@@ -136,21 +89,17 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-clean');
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-karma');
-    grunt.loadNpmTasks('grunt-preprocess');
     grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-html2js');
     grunt.loadNpmTasks('grunt-contrib-watch');
-    grunt.loadNpmTasks('grunt-execute');
 
     grunt.registerTask('startKarma', ['karma:watch']);
     grunt.registerTask('startSelenium', ['shell:startSelenium']);
     grunt.registerTask('startProtractor', ['shell:startProtractor']);
     grunt.registerTask('generateTemplates', ['html2js']);
-    grunt.registerTask('devPreprocess', ['preprocess:htmlDev']);
-    grunt.registerTask('prodPreprocess', ['preprocess:htmlProd', 'preprocess:jsProd']);
     grunt.registerTask('githubPush', ['shell:githubAdd', 'shell:githubCommit', 'shell:githubPush']);
-    grunt.registerTask('dev', ['clean', 'jshint', 'bump', 'devPreprocess', 'generateTemplates', 'githubPush']);
-    grunt.registerTask('prod', ['clean', 'jshint', 'startProtractor', 'karma:run', 'bump', 'prodPreprocess',
+    grunt.registerTask('dev', ['clean', 'jshint', 'bump', 'generateTemplates', 'githubPush']);
+    grunt.registerTask('prod', ['clean', 'jshint', 'startProtractor', 'karma:run', 'bump',
         'generateTemplates', 'concat', 'uglify', 'githubPush']);
 };
