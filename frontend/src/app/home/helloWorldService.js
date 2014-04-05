@@ -8,7 +8,7 @@
          * @returns {string} The hello world message
          */
         function getMessage() {
-            return 'Hello World!'
+            return 'Hello World!';
         }
 
         return  {

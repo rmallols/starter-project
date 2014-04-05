@@ -9,7 +9,6 @@
             scope: true,
             template: '<div class="helloWorld">{{helloWorldMessage}}</div>',
             link: function link(scope) {
-
                 scope.helloWorldMessage = helloWorld.getMessage();
             }
         };

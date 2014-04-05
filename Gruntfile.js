@@ -1,6 +1,5 @@
 module.exports = function(grunt) {
-    var constantsService = require('./server/constantsService'),
-        prodKey = constantsService.envs.prod;
+
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
         libFolder: 'client/lib/',
@@ -9,11 +8,10 @@ module.exports = function(grunt) {
         cssFolder: 'client/css',
         minFolder: 'client/min/',
         appsFolder: 'client/apps/',
+        srcFolder: 'frontend/src/',
         clean: ['<%= minFolder %>js.min.js', '<%= jsFolder %>/resources-<%= pkg.version %>.js'],
         jshint: {
-            all: ['<%= jsFolder %>*.js', '<%= jsFolder %>controllers/*.js',
-                '<%= jsFolder %>directives/*.js', '<%= jsFolder %>directives/**/*.js',
-                '<%= jsFolder %>services/*.js', '<%= jsFolder %>services/**/*.js'],
+            all: ['<%= srcFolder %>/**/*.js'],
             options: {
                 '-W014': false, //Bad line breaking,
                 '-W060': false //Document.write can be a form of eval (enable once we have a script loader)
@@ -21,11 +19,11 @@ module.exports = function(grunt) {
         },
         karma: {
             run: {
-                configFile: 'server/config/karma.conf.js',
+                configFile: 'frontend/build/karma.conf.js',
                 singleRun: true
             },
             watch: {
-                configFile: 'server/config/karma.conf.js',
+                configFile: 'frontend/build/karma.conf.js',
                 singleRun: false
             }
         },
@@ -119,12 +117,9 @@ module.exports = function(grunt) {
                 options: { stdout: true }
             },
             startProtractor:{ command: '.\\node_modules\\.bin\\protractor .\\server\\tests\\e2e\\customConf.js', options: { stdout: true } },
-            startMongo:     { command: grunt.option('path'), options: { async: true, stdout: true }},
             githubAdd:      { command: 'git add .', options: { stdout: true } },
             githubCommit:   { command: 'git commit -m "#0 prod update"', options: { stdout: true } },
-            githubPush:     { command: 'git push', options: { stdout: true } },
-            herokuPush:     { command: 'git push heroku master', options: { stdout: true } },
-            herokuLogs:     { command: 'heroku logs --tail', options: { stdout: true } }
+            githubPush:     { command: 'git push', options: { stdout: true } }
         },
         watch: {
             templates: {
@@ -145,22 +140,17 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-html2js');
-    grunt.loadNpmTasks('grunt-bumpup');
     grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-execute');
 
     grunt.registerTask('startKarma', ['karma:watch']);
-    grunt.registerTask('startMongo', ['shell:startMongo']);
     grunt.registerTask('startSelenium', ['shell:startSelenium']);
     grunt.registerTask('startProtractor', ['shell:startProtractor']);
     grunt.registerTask('generateTemplates', ['html2js']);
     grunt.registerTask('devPreprocess', ['preprocess:htmlDev']);
     grunt.registerTask('prodPreprocess', ['preprocess:htmlProd', 'preprocess:jsProd']);
-    grunt.registerTask('bump', ['bumpup:minor']);
     grunt.registerTask('githubPush', ['shell:githubAdd', 'shell:githubCommit', 'shell:githubPush']);
-    grunt.registerTask('herokuPush', ['shell:herokuPush']);
-    grunt.registerTask('herokuLogs', ['shell:herokuLogs']);
     grunt.registerTask('dev', ['clean', 'jshint', 'bump', 'devPreprocess', 'generateTemplates', 'githubPush']);
     grunt.registerTask('prod', ['clean', 'jshint', 'startProtractor', 'karma:run', 'bump', 'prodPreprocess',
-        'generateTemplates', 'concat', 'uglify', 'githubPush', 'herokuPush']);
+        'generateTemplates', 'concat', 'uglify', 'githubPush']);
 };

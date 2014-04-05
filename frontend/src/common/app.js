@@ -1,1 +1,1 @@
-var app = angular.module('starterProject', []);
+var app = angular.module('starterProject', ['ngRoute']);
