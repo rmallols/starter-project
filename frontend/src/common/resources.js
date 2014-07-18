@@ -16,7 +16,6 @@ var less;
     //External libraries
     getScript(vendorPath + '/angularJs/angular.min.js');
     getScript(vendorPath + '/angularJs/angular-ui-router.min.js');
-    getScript(vendorPath + '/jQuery/jquery.min.js');
 
     //Common src resources
     getScript(srcPath + '/common/app.js');
