@@ -15,7 +15,7 @@ var less;
 
     //External libraries
     getScript(vendorPath + '/angularJs/angular.min.js');
-    getScript(vendorPath + '/angularJs/angular-route.js');
+    getScript(vendorPath + '/angularJs/angular-ui-router.min.js');
     getScript(vendorPath + '/jQuery/jquery.min.js');
 
     //Common src resources
@@ -24,8 +24,11 @@ var less;
 
     //Business logic src resources
     //Home
+    getScript(srcPath + '/app/home/HomeCtrl.js');
     getScript(srcPath + '/app/home/helloWorldDirective.js');
     getScript(srcPath + '/app/home/helloWorldService.js');
+    //Details
+    getScript(srcPath + '/app/details/DetailsCtrl.js');
 
     //Less vendor library (has to be loaded at the end of the stylesheet chain
     less = { env: "production" }; //Set production environment to avoid log messages
