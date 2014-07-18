@@ -19,5 +19,5 @@ app.config(function($locationProvider, $stateProvider, $urlRouterProvider) {
             url: "/details",
             templateUrl: "src/app/details/details.html",
             controller: 'DetailsCtrl'
-        })
+        });
 });

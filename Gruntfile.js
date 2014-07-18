@@ -94,6 +94,7 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-html2js');
     grunt.loadNpmTasks('grunt-contrib-watch');
 
+    grunt.registerTask('runJshint', ['jshint']);
     grunt.registerTask('startKarma', ['karma:watch']);
     grunt.registerTask('startSelenium', ['shell:startSelenium']);
     grunt.registerTask('startProtractor', ['shell:startProtractor']);
